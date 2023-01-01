@@ -1,11 +1,11 @@
-#  Scoutium
+#Scoutium
 
-# YAPAY ÖĞRENME İLE YETENEK AVCILIĞI SINIFLANDIRMA
+#YAPAY ÖĞRENME İLE YETENEK AVCILIĞI SINIFLANDIRMA
 
 ##Veri Seti Hikayesi : 
 
 #Scoutium futbolcuların değerlendirmeleri ve kulüplere canlı analizler yapılarak
-# futbolcuların keşfedilmeleri sağlanıyor.
+#futbolcuların keşfedilmeleri sağlanıyor.
 
 #Veri seti Scoutium’dan maçlarda gözlemlenen futbolcuların özelliklerine göre scoutların değerlendirdikleri futbolcuların, maç
 #içerisinde puanlanan özellikleri ve puanlarını içeren bilgilerden oluşmaktadır.
