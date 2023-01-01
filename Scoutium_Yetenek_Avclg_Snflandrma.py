@@ -1,10 +1,4 @@
 
-
-
-##Veri Seti Hikayesi : Scoutium futbolcuların değerlendirmeleri ve kulüplere canlı analizler yapılarak
-# futbolcuların keşfedilmeleri sağlanıyor.
-#Veri seti Scoutium’dan maçlarda gözlemlenen futbolcuların özelliklerine göre scoutların değerlendirdikleri futbolcuların, maç
-#içerisinde puanlanan özellikleri ve puanlarını içeren bilgilerden oluşmaktadır.
 #scoutium_attributes ;
 
 #task_response_id : Bir scoutun bir maçta bir takımın kadrosundaki tüm oyunculara dair değerlendirmelerinin kümesi
@@ -59,10 +53,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 500)
 
 
-
-###Görevler;
-
-#Adım 1: scoutium_attributes.csv ve scoutium_potential_labels.csv dosyalarını okutunuz.
+## scoutium_attributes.csv ve scoutium_potential_labels.csv dosyalarını okutuyoruz.
 
 
 df1 = pd.read_csv("datasets/scoutium_attributes.csv", sep= ';') #direk noktalı virgülde eklenebilir. / seperatior/ön tanımlı değer virgül.
@@ -77,11 +68,12 @@ df2.head()
 
 
 
-#Adım 2: Okutmuş olduğumuz csv dosyalarını merge fonksiyonunu kullanarak birleştiriniz.
+## Okutmuş olduğumuz csv dosyalarını merge fonksiyonunu kullanarak birleştiriyoruz.
 #("task_response_id", 'match_id', 'evaluator_id' "player_id" 4 adet değişken üzerinden birleştirme işlemini gerçekleştiriniz.)
 
 
-df = pd.merge(df1, df2, how='left', on=['task_response_id','match_id', 'evaluator_id', "player_id" ]) #/fazladan değ. türemesin diye.4ü üzerinden/index sayısı artmasın diye.
+df = pd.merge(df1, df2, how='left', on=['task_response_id','match_id', 'evaluator_id', "player_id" ]) 
+#/fazladan değ. türemesin diye.4ü üzerinden/index sayısı artmasın diye.
 
 def check_df(dataframe, head=5): ##veri setini tanıma fonk.
     print("##################### Shape #####################")
@@ -99,15 +91,16 @@ def check_df(dataframe, head=5): ##veri setini tanıma fonk.
 
 check_df(df)
 
-#Adım 3: position_id içerisindeki Kaleci (1) sınıfını veri setinden kaldırınız.
+##position_id içerisindeki Kaleci (1) sınıfını veri setinden kaldırıyoruz.
 
-df = df[df.position_id != 1]      # Remove the Keeper (1) class in position / df[~df.position_id == 1] / or df.drop(df[df['position_id'] == 1].index, inplace = True)
+df = df[df.position_id != 1]     
+# Remove the Keeper (1) class in position / df[~df.position_id == 1] / or df.drop(df[df['position_id'] == 1].index, inplace = True)
 
 df[["position_id"]].value_counts()
 
 
 
-#Adım 4: potential_label içerisindeki below_average sınıfını veri setinden kaldırınız.( below_average sınıfı tüm verisetinin %1'ini oluşturur)
+##potential_label içerisindeki below_average sınıfını veri setinden kaldırıyoruz.( below_average sınıfı tüm verisetinin %1'ini oluşturur)
 
 df = df[df['potential_label'] != 'below_average']
 
@@ -127,10 +120,10 @@ plt.show()
 
 df.groupby(df=['potential_label']).aggregate({'attribute_values' : 'mean' })
 
-#Adım 5: Oluşturduğunuz veri setinden “pivot_table” fonksiyonunu kullanarak bir tablo oluşturunuz. Bu pivot table'da her satırda bir oyuncu
-#olacak şekilde manipülasyon yapınız.
-#Adım 1*: İndekste “player_id”,“position_id” ve “potential_label”, sütunlarda “attribute_id” ve değerlerde scout’ların oyunculara verdiği puan
-#“attribute_value” olacak şekilde pivot table’ı oluşturunuz.
+## Oluşturduğumuz veri setinden “pivot_table” fonksiyonunu kullanarak bir tablo oluşturuyoruz. Bu pivot table'da her satırda bir oyuncu
+#olacak şekilde manipülasyon yapıyoruz.
+#*İndekste “player_id”,“position_id” ve “potential_label”, sütunlarda “attribute_id” ve değerlerde scout’ların oyunculara verdiği puan
+#“attribute_value” olacak şekilde pivot table’ı oluşturuyoruz.
 
 df_pivot = pd.pivot_table(df, values='attribute_value' ,
                           index=['player_id', 'position_id', 'potential_label'],
@@ -138,7 +131,7 @@ df_pivot = pd.pivot_table(df, values='attribute_value' ,
 
 
 
-#Adım 2: “reset_index” fonksiyonunu kullanarak indeksleri değişken olarak atayınız ve “attribute_id” sütunlarının isimlerini stringe çeviriniz.
+#“reset_index” fonksiyonunu kullanarak indeksleri değişken olarak atayoruz ve “attribute_id” sütunlarının isimlerini stringe çeviriyoruz.
 
 
 df_pivot = df_pivot.reset_index(inplace=True)
@@ -150,10 +143,10 @@ df_pivot.dtypes
 
 
 
-#Adım 6: Label Encoder fonksiyonunu kullanarak “potential_label” kategorilerini (average, highlighted) sayısal olarak ifade ediniz.
+## Label Encoder fonksiyonunu kullanarak “potential_label” kategorilerini (average, highlighted) sayısal olarak ifade ediyoruz.
 
 #label enc. kategorik değişkenleri işlemek için.
-# label encoding / binary encoding işlemini 2 sınıflı kategorik değişkenlere uyguluyoruz. bu iki sınıfı 1-0 şeklinde encodelamış oluyoruz
+# label encoding / binary encoding işlemini 2 sınıflı kategorik değişkenlere uyguluyoruz. bu iki sınıfı 1-0 şeklinde encodelamış oluyoruz.
 # one-hot encoder ise ordinal sınıflı kategorik değişkenler için uyguluyoruz. sınıfları arasında fark olan
 # değişkenleri sınıf sayısınca numaralandırıp kategorik değişken olarak df e gönderiyor.
 
@@ -167,7 +160,7 @@ df_pivot.head()
 
 #num_cols = df_pivot. columns[3:] #virgülden sonraki ilk 3
 
-#Adım 7: Sayısal değişken kolonlarını “num_cols” adıyla bir listeye atayınız.
+##Sayısal değişken kolonlarını “num_cols” adıyla bir listeye atayoruz.
 
 num_cols = [col for col in df_pivot.columns if col not in ["player_id", "position_id", "potential_label"]]
 df_pivot_num = df_pivot[num_cols]
@@ -187,7 +180,7 @@ plt.show()
 
 
 
-#Adım 8: Kaydettiğiniz bütün “num_cols” değişkenlerindeki veriyi ölçeklendirmek için Standard Scaler uygulayınız.
+## Kaydettiğimiz bütün “num_cols” değişkenlerindeki veriyi ölçeklendirmek için Standard Scaler uyguluyoruz.
 
 
 StandardScaler().fit_transform(df_pivot[num_cols])
@@ -199,8 +192,8 @@ StandardScaler().fit_transform(df_pivot[num_cols])
 
 
 
-#Adım 9: Elimizdeki veri seti üzerinden minimum hata ile futbolcuların potansiyel etiketlerini tahmin eden bir makine öğrenmesi modeli
-#geliştiriniz. (Roc_auc, f1, precision, recall, accuracy metriklerini yazdırınız.)
+## Elimizdeki veri seti üzerinden minimum hata ile futbolcuların potansiyel etiketlerini tahmin eden bir makine öğrenmesi modeli
+#geliştiriyoruz. (Roc_auc, f1, precision, recall, accuracy metriklerini yazdırıyoruz.)
 
 
 y = df_pivot["potential_label"] #Y BAĞIMLI, X BAĞIMSIZ
@@ -228,7 +221,7 @@ for name, model in models:
 
 df_pivot.head()
 
-# Train verisi ile model kurup, model başarısını değerlendiriniz.
+# Train verisi ile model kurup, model başarısını değerlendiriyoruz.
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -265,7 +258,7 @@ scores = ["roc_auc", "f1", "precision", "recall", "accuracy"]
 for i in scores:
     base_models(X, y, i)
 
-#Adım 10: Değişkenlerin önem düzeyini belirten feature_importance fonksiyonunu kullanarak özelliklerin sıralamasını çizdiriniz.
+## Değişkenlerin önem düzeyini belirten feature_importance fonksiyonunu kullanarak özelliklerin sıralamasını çizdiriyoruz.
 
 
 def plot_importance(model, features, num=len(X), save=False):
