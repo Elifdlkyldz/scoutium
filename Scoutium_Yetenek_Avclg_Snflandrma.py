@@ -217,46 +217,169 @@ for name, model in models:
     print(name)
     for score in ["roc_auc", "f1", "precision", "recall", "accuracy"]:
         cvs = cross_val_score(model, X, y, scoring=score, cv=10).mean()
-        print(score+" score:"+str(cvs))
+        print(score+" score:"+str(cvs)),
+        
 
-df_pivot.head()
+        
+'''LR
 
-# Train verisi ile model kurup, model başarısını değerlendiriyoruz.
+roc_auc score:0.8452886002886002
+f1 score:0.5684648684648684
+precision score:0.7738095238095238
+recall score:0.49000000000000005
+accuracy score:0.8525132275132276
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+KNN
 
+roc_auc score:0.7256998556998557
+f1 score:0.4278571428571428
+precision score:0.775
+recall score:0.30999999999999994
+accuracy score:0.8449735449735449
 
-f,ax=plt.subplots(1,2,figsize=(10,5))
-y_train.value_counts().plot.pie(explode=[0,0.1],autopct='%1.1f%%',ax=ax[0],shadow=True)
-ax[0].set_title('Distribution')
-ax[0].set_ylabel('')
-sns.countplot(y_train,ax=ax[1])
-ax[1].set_title('Count')
-plt.show()
+CART
 
+roc_auc score:0.7181601731601732
+f1 score:0.5346375846375847
+precision score:0.5566666666666666
+recall score:0.5399999999999999
+accuracy score:0.8044973544973544
 
+RF
+
+roc_auc score:0.8997186147186147
+f1 score:0.5928932178932179
+precision score:0.9333333333333332
+recall score:0.4533333333333333
+accuracy score:0.8818783068783069
+
+GBM
+
+roc_auc score:0.8706782106782107
+f1 score:0.5481529581529581
+precision score:0.7633333333333333
+recall score:0.4866666666666667
+accuracy score:0.8560846560846562
+
+XGBoost
+
+roc_auc score:0.8558080808080808
+f1 score:0.611030081030081
+precision score:0.7397619047619048
+recall score:0.5766666666666665
+accuracy score:0.8563492063492063
+
+CatBoost
+
+roc_auc score:0.9040981240981241
+f1 score:0.5937662337662338
+precision score:0.93
+recall score:0.47000000000000003
+accuracy score:0.8817460317460318
+
+LightGBM
+
+roc_auc score:0.8982034632034631
+f1 score:0.6632539682539682
+precision score:0.8071428571428572
+recall score:0.5933333333333333
+accuracy score:0.8817460317460318 
+'''  
+
+#base model tahminlerini yapıyoruz;
 
 def base_models(X, y, scoring):
     print("Base Models....")
-    classifiers = [('LR', LogisticRegression()),
-                   ('KNN', KNeighborsClassifier()),
-                   ("SVC", SVC()),
-                   ("CART", DecisionTreeClassifier()),
-                   ("RF", RandomForestClassifier()),
-                   ('Adaboost', AdaBoostClassifier()),
-                   ('GBM', GradientBoostingClassifier()),
-                   ('XGBoost', XGBClassifier(use_label_encoder=False, eval_metric='logloss')),
-                   ('LightGBM', LGBMClassifier()),
-                   ('CatBoost', CatBoostClassifier(verbose=False))]
+    models = [('LR', LogisticRegression()),
+            ('KNN', KNeighborsClassifier()),
+            ("CART", DecisionTreeClassifier()),
+            ("RF", RandomForestClassifier()),
+            ('GBM', GradientBoostingClassifier()),
+            ('XGBoost', XGBClassifier(use_label_encoder=False, eval_metric='logloss')),
+            ('CatBoost', CatBoostClassifier(verbose=False)),
+            ("LightGBM", LGBMClassifier())]
 
-    for name, classifier in classifiers:
-        cv_results = cross_validate(classifier, X, y, cv=3, scoring=scoring)
+    for name, classifier in models:
+        cv_results = cross_validate(classifier, X, y, cv=10, scoring=scoring)
         print(f"{scoring}: {round(cv_results['test_score'].mean(), 4)} ({name}) ")
 
 scores = ["roc_auc", "f1", "precision", "recall", "accuracy"]
 
 for i in scores:
     base_models(X, y, i)
+    
+''' Base Models....
+roc_auc: 0.8453 (LR) 
+roc_auc: 0.7257 (KNN) 
+roc_auc: 0.6976 (CART) 
+roc_auc: 0.8918 (RF) 
+roc_auc: 0.8694 (GBM) 
+roc_auc: 0.8558 (XGBoost) 
+roc_auc: 0.9041 (CatBoost) 
+roc_auc: 0.8982 (LightGBM) 
+Base Models....
+f1: 0.5685 (LR) 
+f1: 0.4279 (KNN) 
+f1: 0.5491 (CART) 
+f1: 0.5711 (RF) 
+f1: 0.5904 (GBM) 
+f1: 0.611 (XGBoost) 
+f1: 0.5938 (CatBoost) 
+f1: 0.6633 (LightGBM) 
+Base Models....
+precision: 0.7738 (LR) 
+precision: 0.775 (KNN) 
+precision: 0.5907 (CART) 
+precision: 0.87 (RF) 
+precision: 0.7633 (GBM) 
+precision: 0.7398 (XGBoost) 
+precision: 0.93 (CatBoost) 
+precision: 0.8071 (LightGBM) 
+Base Models....
+recall: 0.49 (LR) 
+recall: 0.31 (KNN) 
+recall: 0.52 (CART) 
+recall: 0.47 (RF) 
+recall: 0.5267 (GBM) 
+recall: 0.5767 (XGBoost) 
+recall: 0.47 (CatBoost) 
+recall: 0.5933 (LightGBM) 
+Base Models....
+accuracy: 0.8525 (LR) 
+accuracy: 0.845 (KNN) 
+accuracy: 0.8081 (CART) 
+accuracy: 0.8782 (RF) 
+accuracy: 0.8708 (GBM) 
+accuracy: 0.8563 (XGBoost) 
+accuracy: 0.8817 (CatBoost) 
+accuracy: 0.8817 (LightGBM) '''
+
+         
+# LightGBM ile ilerleyelim;
+
+
+lgbm_model = LGBMClassifier(random_state=47)
+
+
+lgbm_params = {"learning_rate": [0.01, 0.1],
+               "n_estimators": [500, 1500],
+               "colsample_bytree": [0.5, 0.7, 1]
+             }
+
+lgbm_gs_best = GridSearchCV(lgbm_model,
+                            lgbm_params,
+                            cv=3,
+                            n_jobs=-1,
+                            verbose=True).fit(X, y)
+
+# normal y cv süresi: 16.2s
+# scale edilmiş y ile: 13.8s
+
+final_model = lgbm_model.set_params(**lgbm_gs_best.best_params_).fit(X, y)
+
+rmse = np.mean(np.sqrt(-cross_val_score(final_model, X, y, cv=5, scoring="neg_mean_squared_error")))
+
+
 
 ## Değişkenlerin önem düzeyini belirten feature_importance fonksiyonunu kullanarak özelliklerin sıralamasını çizdiriyoruz.
 
@@ -278,28 +401,12 @@ model.fit(X, y)
 
 plot_importance(model, X)
 
-# Stacking & Ensemble Learning
-
-def voting_classifier(best_models, X, y):
-    print("Voting Classifier...") #işlemşn başladığını görmek için yazdık bunu.
-
-    voting_clf = VotingClassifier(estimators=[('KNN', best_models["KNN"]), #best modelsden knn gelicek.bunları bşz seçtik. bestde çıkan sonuçlarda en iyileri seçebilirisn!!
-                                              ('RF', best_models["RF"]), #bestden rf gelicek.
-                                              ('LightGBM', best_models["LightGBM"])], #aynı işlem.
-                                  voting='soft').fit(X, y) #hepsini fit edicek. voting-clf nin cv hatasına bakıcaz.
-
-    cv_results = cross_validate(voting_clf, X, y, cv=3, scoring=["accuracy", "f1", "roc_auc"])
-    print(f"Accuracy: {cv_results['test_accuracy'].mean()}")
-    print(f"F1Score: {cv_results['test_f1'].mean()}")
-    print(f"ROC_AUC: {cv_results['test_roc_auc'].mean()}")
-    return voting_clf
 
 
-X.columns
-random_user = X.sample(1, random_state=45) #rastgele bi kullanıcı seçtik.
-voting_clf.predict(random_user) #bu kullanıcı için diabet tahmini gerçekleştirdik.
-
-joblib.dump(voting_clf, "voting_clf2.pkl") #bu modeli kayıt edicez. isim bana kalmış.
+joblib.dump(voting_clf, "voting_clf2.pkl") #bu modeli kayıt ediyoruz.
 
 new_model = joblib.load("voting_clf2.pkl") #modeli kayıt ettim ve load diyerek dosyamı yükledim.
 new_model.predict(random_user)
+      
+            
+
